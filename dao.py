@@ -4,6 +4,7 @@ DAO (Data Access Object) 모듈
 """
 
 from typing import List, Optional
+from datetime import datetime
 from entities import User, Job, Application, Notification, Resume, Timetable, Bookmark, ViewHistory, FAQ, Inquiry
 
 class UserDAO:
