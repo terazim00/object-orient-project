@@ -384,10 +384,6 @@ class MainWindow:
         self.frame.destroy()
 
 
-"""
-
-# JobDetailWindow부터 끝까지 대체할 코드
-
 class JobDetailWindow:
     """공고 상세 화면"""
 
