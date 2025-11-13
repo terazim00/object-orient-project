@@ -384,557 +384,530 @@ class MainWindow:
         self.frame.destroy()
 
 
+"""
+
+# JobDetailWindow부터 끝까지 대체할 코드
+
 class JobDetailWindow:
     """공고 상세 화면"""
-    
-    def __init__(self, root, job_id: int, user):
-        """
-        공고 상세 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param job_id: 공고 ID
-        :param user: 로그인한 User 객체
-        """
+
+    def __init__(self, root, job_id, user):
         self.root = root
         self.job_id = job_id
         self.user = user
         self.job_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("공고 상세")
+        self.frame.geometry("600x500")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        공고 상세 화면 UI 구성
-        - 공고 제목 및 기본 정보
-        - 상세 설명
-        - 근무 조건
-        - 지원 자격
-        - 지원하기 버튼
-        - 북마크 버튼
-        """
-        pass
-    
+        tk.Label(self.frame, text="공고 상세 정보", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        info_frame = tk.Frame(self.frame)
+        info_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        tk.Label(info_frame, text="공고 ID: " + str(self.job_id), font=("맑은 고딕", 12)).pack(pady=5)
+
+        btn_frame = tk.Frame(self.frame)
+        btn_frame.pack(pady=20)
+
+        tk.Button(btn_frame, text="지원하기", command=self.on_apply_click, width=15).pack(side=tk.LEFT, padx=10)
+        tk.Button(btn_frame, text="북마크", command=self.on_bookmark_click, width=15).pack(side=tk.LEFT, padx=10)
+        tk.Button(btn_frame, text="닫기", command=self.frame.destroy, width=15).pack(side=tk.LEFT, padx=10)
+
     def load_job_details(self):
-        """
-        공고 상세 정보 로드
-        """
         pass
-    
+
     def on_apply_click(self):
-        """
-        지원하기 버튼 클릭 이벤트 처리
-        """
-        pass
-    
+        messagebox.showinfo("지원하기", "지원서 작성 화면으로 이동합니다.")
+
     def on_bookmark_click(self):
-        """
-        북마크 버튼 클릭 이벤트 처리 (FR-09)
-        """
-        pass
-    
-    def check_time_conflict(self) -> bool:
-        """
-        시간표 충돌 확인 (FR-06)
-        :return: 충돌 여부
-        """
-        pass
+        messagebox.showinfo("북마크", "북마크에 추가되었습니다.")
+
+    def check_time_conflict(self):
+        return False
 
 
 class ApplicationWindow:
     """지원서 작성 화면"""
-    
-    def __init__(self, root, job_id: int, user):
-        """
-        지원서 작성 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param job_id: 지원할 공고 ID
-        :param user: 로그인한 User 객체
-        """
+
+    def __init__(self, root, job_id, user):
         self.root = root
         self.job_id = job_id
         self.user = user
         self.application_manager = None
         self.resume_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("지원서 작성")
+        self.frame.geometry("600x500")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        지원서 작성 화면 UI 구성 (UX-02: 3단계 이내)
-        - 이력서 선택
-        - 자기소개서 작성
-        - 제출 버튼
-        """
-        pass
-    
+        tk.Label(self.frame, text="지원서 작성", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        form_frame = tk.Frame(self.frame)
+        form_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        tk.Label(form_frame, text="이력서 선택:", font=("맑은 고딕", 12)).grid(row=0, column=0, sticky=tk.W, pady=10)
+        tk.Button(form_frame, text="이력서 불러오기", command=self.load_user_resumes).grid(row=0, column=1, padx=10)
+
+        tk.Label(form_frame, text="자기소개서:", font=("맑은 고딕", 12)).grid(row=1, column=0, sticky=tk.NW, pady=10)
+        self.cover_letter = tk.Text(form_frame, height=10, width=40)
+        self.cover_letter.grid(row=1, column=1, padx=10, pady=10)
+
+        tk.Button(self.frame, text="제출", command=self.on_submit_click, width=15).pack(pady=20)
+
     def load_user_resumes(self):
-        """
-        사용자의 이력서 목록 로드 (FR-04)
-        """
+        messagebox.showinfo("이력서", "이력서 목록을 불러옵니다.")
+
+    def on_resume_select(self, resume_id):
         pass
-    
-    def on_resume_select(self, resume_id: int):
-        """
-        이력서 선택 이벤트 처리
-        :param resume_id: 선택한 이력서 ID
-        """
-        pass
-    
+
     def on_submit_click(self):
-        """
-        제출 버튼 클릭 이벤트 처리
-        """
-        pass
-    
+        if self.validate_form():
+            messagebox.showinfo("제출 완료", "지원서가 제출되었습니다.")
+            self.frame.destroy()
+
     def auto_save(self):
-        """
-        자동 임시저장 (REL-01: 30초마다)
-        """
         pass
-    
-    def validate_form(self) -> bool:
-        """
-        폼 유효성 검사
-        :return: 유효성 여부
-        """
-        pass
+
+    def validate_form(self):
+        return True
 
 
 class MyPageWindow:
     """마이페이지 화면"""
-    
+
     def __init__(self, root, user):
-        """
-        마이페이지 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        """
         self.root = root
         self.user = user
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("마이페이지")
+        self.frame.geometry("800x600")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        마이페이지 UI 구성
-        - 이력서 관리 탭
-        - 지원현황 탭
-        - 스크랩 탭
-        - 최근 본 알바 탭
-        """
-        pass
-    
+        tk.Label(self.frame, text="마이페이지", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        notebook = ttk.Notebook(self.frame)
+        notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        resume_tab = tk.Frame(notebook)
+        application_tab = tk.Frame(notebook)
+        bookmark_tab = tk.Frame(notebook)
+        history_tab = tk.Frame(notebook)
+
+        notebook.add(resume_tab, text="이력서 관리")
+        notebook.add(application_tab, text="지원현황")
+        notebook.add(bookmark_tab, text="스크랩")
+        notebook.add(history_tab, text="최근 본 알바")
+
     def setup_resume_tab(self):
-        """
-        이력서 관리 탭 구성
-        """
         pass
-    
+
     def setup_application_tab(self):
-        """
-        지원현황 탭 구성 (FR-05: 타임라인)
-        """
         pass
-    
+
     def setup_bookmark_tab(self):
-        """
-        스크랩 탭 구성
-        """
         pass
-    
+
     def setup_history_tab(self):
-        """
-        최근 본 알바 탭 구성 (FR-10)
-        """
         pass
 
 
 class ApplicationStatusWindow:
     """지원현황 화면"""
-    
+
     def __init__(self, root, user):
-        """
-        지원현황 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        """
         self.root = root
         self.user = user
         self.application_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("지원현황")
+        self.frame.geometry("700x500")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        지원현황 화면 UI 구성
-        - 지원서 목록
-        - 각 지원서의 현재 상태
-        - 타임라인 표시
-        """
-        pass
-    
-    def display_application_list(self, applications: list):
-        """
-        지원서 목록 표시
-        :param applications: Application 객체 리스트
-        """
-        pass
-    
-    def display_timeline(self, application_id: int):
-        """
-        지원서 타임라인 표시 (FR-05)
-        :param application_id: 지원서 ID
-        """
-        pass
-    
-    def on_application_click(self, application_id: int):
-        """
-        지원서 클릭 이벤트 처리
-        :param application_id: 클릭한 지원서 ID
-        """
-        pass
+        tk.Label(self.frame, text="지원현황", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        self.listbox = tk.Listbox(self.frame, font=("맑은 고딕", 10), height=15)
+        self.listbox.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        self.listbox.bind('<Double-Button-1>', lambda e: self.on_application_click())
+
+    def display_application_list(self, applications):
+        self.listbox.delete(0, tk.END)
+        for app in applications:
+            self.listbox.insert(tk.END, f"공고 {app.job_id} - 상태: {app.status}")
+
+    def display_timeline(self, application_id):
+        messagebox.showinfo("타임라인", f"지원서 {application_id}의 타임라인을 표시합니다.")
+
+    def on_application_click(self):
+        selection = self.listbox.curselection()
+        if selection:
+            self.display_timeline(selection[0])
 
 
 class ResumeEditorWindow:
     """이력서 편집 화면"""
-    
-    def __init__(self, root, user, resume_id: int = None):
-        """
-        이력서 편집 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        :param resume_id: 수정할 이력서 ID (None이면 신규 작성)
-        """
+
+    def __init__(self, root, user, resume_id=None):
         self.root = root
         self.user = user
         self.resume_id = resume_id
         self.resume_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("이력서 편집")
+        self.frame.geometry("600x600")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        이력서 편집 화면 UI 구성 (FR-04)
-        - 학번/학과/경력 입력
-        - 자격증 입력
-        - 자기소개 입력
-        - 저장 버튼
-        """
-        pass
-    
+        tk.Label(self.frame, text="이력서 편집", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        form_frame = tk.Frame(self.frame)
+        form_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        fields = [
+            ("제목:", "title"),
+            ("학력:", "education"),
+            ("경력:", "experience"),
+            ("자격증:", "certifications")
+        ]
+
+        self.entries = {}
+        for i, (label, key) in enumerate(fields):
+            tk.Label(form_frame, text=label, font=("맑은 고딕", 11)).grid(row=i, column=0, sticky=tk.W, pady=10)
+            entry = tk.Entry(form_frame, font=("맑은 고딕", 11), width=30)
+            entry.grid(row=i, column=1, padx=10, pady=10)
+            self.entries[key] = entry
+
+        tk.Label(form_frame, text="자기소개:", font=("맑은 고딕", 11)).grid(row=len(fields), column=0, sticky=tk.NW, pady=10)
+        self.intro_text = tk.Text(form_frame, height=5, width=30)
+        self.intro_text.grid(row=len(fields), column=1, padx=10, pady=10)
+
+        tk.Button(self.frame, text="저장", command=self.on_save_click, width=15).pack(pady=20)
+
     def load_resume_data(self):
-        """
-        기존 이력서 데이터 로드 (수정 모드)
-        """
         pass
-    
+
     def on_save_click(self):
-        """
-        저장 버튼 클릭 이벤트 처리
-        """
-        pass
-    
-    def validate_form(self) -> bool:
-        """
-        폼 유효성 검사
-        :return: 유효성 여부
-        """
-        pass
+        if self.validate_form():
+            messagebox.showinfo("저장 완료", "이력서가 저장되었습니다.")
+            self.frame.destroy()
+
+    def validate_form(self):
+        return True
 
 
 class TimetableWindow:
     """시간표 관리 화면"""
-    
+
     def __init__(self, root, user):
-        """
-        시간표 관리 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        """
         self.root = root
         self.user = user
         self.timetable_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("시간표 관리")
+        self.frame.geometry("700x600")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        시간표 화면 UI 구성 (FR-06)
-        - 시간표 그리드
-        - 가져오기 버튼
-        - 수정 버튼
-        - 저장 버튼
-        """
+        tk.Label(self.frame, text="시간표 관리", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        canvas = tk.Canvas(self.frame, width=650, height=400, bg="white")
+        canvas.pack(pady=10)
+
+        # 간단한 시간표 그리드 그리기
+        for i in range(6):  # 요일
+            for j in range(10):  # 시간
+                x1, y1 = 50 + i*100, 50 + j*35
+                x2, y2 = x1 + 100, y1 + 35
+                canvas.create_rectangle(x1, y1, x2, y2)
+
+        btn_frame = tk.Frame(self.frame)
+        btn_frame.pack(pady=20)
+
+        tk.Button(btn_frame, text="가져오기", command=self.on_import_click, width=15).pack(side=tk.LEFT, padx=10)
+        tk.Button(btn_frame, text="저장", command=self.on_save_click, width=15).pack(side=tk.LEFT, padx=10)
+
+    def display_timetable(self, timetable_data):
         pass
-    
-    def display_timetable(self, timetable_data: dict):
-        """
-        시간표 표시
-        :param timetable_data: 시간표 데이터
-        """
-        pass
-    
+
     def on_import_click(self):
-        """
-        시간표 가져오기 버튼 클릭 이벤트 처리
-        """
-        pass
-    
+        messagebox.showinfo("가져오기", "시간표를 가져옵니다.")
+
     def on_save_click(self):
-        """
-        저장 버튼 클릭 이벤트 처리
-        """
-        pass
+        messagebox.showinfo("저장", "시간표가 저장되었습니다.")
 
 
 class NotificationPanel:
     """알림 패널"""
-    
+
     def __init__(self, root, user):
-        """
-        알림 패널 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        """
         self.root = root
         self.user = user
         self.notification_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("알림")
+        self.frame.geometry("400x500")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        알림 패널 UI 구성
-        - 알림 목록
-        - 읽음/안읽음 표시
-        - 전체 읽음 버튼
-        """
+        tk.Label(self.frame, text="알림", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        self.listbox = tk.Listbox(self.frame, font=("맑은 고딕", 10), height=20)
+        self.listbox.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        self.listbox.bind('<Double-Button-1>', lambda e: self.on_notification_click())
+
+    def load_notifications(self):
         pass
-    
-    def display_notifications(self, notifications: list):
-        """
-        알림 목록 표시
-        :param notifications: Notification 객체 리스트
-        """
-        pass
-    
-    def on_notification_click(self, notification_id: int):
-        """
-        알림 클릭 이벤트 처리
-        :param notification_id: 클릭한 알림 ID
-        """
-        pass
-    
-    def mark_all_as_read(self):
-        """
-        전체 읽음 처리
-        """
-        pass
-    
-    def check_new_notifications(self):
-        """
-        새 알림 확인 (PERP-03: 5분 이내 도착)
-        """
+
+    def display_notifications(self, notifications):
+        self.listbox.delete(0, tk.END)
+        for notif in notifications:
+            self.listbox.insert(tk.END, notif.message)
+
+    def on_notification_click(self):
+        messagebox.showinfo("알림 상세", "알림 내용을 표시합니다.")
+
+    def mark_as_read(self, notification_id):
         pass
 
 
 class RecommendationPanel:
-    """AI 추천 패널"""
-    
+    """추천 공고 패널"""
+
     def __init__(self, root, user):
-        """
-        AI 추천 패널 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        """
         self.root = root
         self.user = user
         self.recommendation_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("추천 공고")
+        self.frame.geometry("600x500")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        추천 패널 UI 구성 (FR-08)
-        - 추천 공고 카드
-        - 매칭 점수 표시
-        """
-        pass
-    
-    def display_recommendations(self, jobs: list):
-        """
-        추천 공고 표시
-        :param jobs: 추천된 Job 객체 리스트
-        """
-        pass
-    
-    def on_refresh_click(self):
-        """
-        추천 새로고침 버튼 클릭 이벤트 처리
-        """
-        pass
+        tk.Label(self.frame, text="AI 추천 공고", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        self.listbox = tk.Listbox(self.frame, font=("맑은 고딕", 10), height=15)
+        self.listbox.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        tk.Button(self.frame, text="새로고침", command=self.load_recommendations, width=15).pack(pady=10)
+
+    def load_recommendations(self):
+        messagebox.showinfo("추천", "AI 추천 공고를 불러옵니다.")
+
+    def display_recommendations(self, jobs):
+        self.listbox.delete(0, tk.END)
+        for job in jobs:
+            self.listbox.insert(tk.END, f"{job.title} - 매칭도: 높음")
 
 
 class FAQWindow:
     """FAQ 화면"""
-    
+
     def __init__(self, root):
-        """
-        FAQ 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        """
         self.root = root
         self.faq_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("FAQ")
+        self.frame.geometry("600x500")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        FAQ 화면 UI 구성 (FR-07)
-        - 카테고리 필터
-        - 검색 바
-        - FAQ 목록
-        """
+        tk.Label(self.frame, text="자주 묻는 질문", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        # 카테고리 선택
+        category_frame = tk.Frame(self.frame)
+        category_frame.pack(pady=10)
+
+        tk.Label(category_frame, text="카테고리:", font=("맑은 고딕", 11)).pack(side=tk.LEFT, padx=5)
+        self.category_var = tk.StringVar(value="전체")
+        category_menu = ttk.Combobox(category_frame, textvariable=self.category_var,
+                                     values=["전체", "지원", "급여", "근무", "기타"])
+        category_menu.pack(side=tk.LEFT, padx=5)
+        category_menu.bind('<<ComboboxSelected>>', lambda e: self.on_category_change())
+
+        # FAQ 목록
+        self.faq_listbox = tk.Listbox(self.frame, font=("맑은 고딕", 10), height=15)
+        self.faq_listbox.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        self.faq_listbox.bind('<Double-Button-1>', lambda e: self.on_faq_click())
+
+    def load_faqs(self):
         pass
-    
-    def display_faq_list(self, faqs: list):
-        """
-        FAQ 목록 표시
-        :param faqs: FAQ 리스트
-        """
-        pass
-    
-    def on_faq_click(self, faq_id: int):
-        """
-        FAQ 클릭 이벤트 처리
-        :param faq_id: 클릭한 FAQ ID
-        """
-        pass
-    
-    def on_search(self):
-        """
-        FAQ 검색 실행
-        """
+
+    def on_category_change(self):
+        messagebox.showinfo("카테고리", f"{self.category_var.get()} FAQ를 불러옵니다.")
+
+    def on_faq_click(self):
+        selection = self.faq_listbox.curselection()
+        if selection:
+            messagebox.showinfo("FAQ 상세", "FAQ 내용을 표시합니다.")
+
+    def search_faq(self, keyword):
         pass
 
 
 class InquiryWindow:
     """1:1 문의 화면"""
-    
+
     def __init__(self, root, user):
-        """
-        1:1 문의 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        """
         self.root = root
         self.user = user
         self.inquiry_manager = None
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("1:1 문의")
+        self.frame.geometry("600x500")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        1:1 문의 화면 UI 구성 (FR-07)
-        - 문의 제목 입력
-        - 문의 내용 입력
-        - 제출 버튼
-        - 내 문의 목록
-        """
-        pass
-    
-    def display_my_inquiries(self, inquiries: list):
-        """
-        내 문의 목록 표시
-        :param inquiries: 문의 리스트
-        """
-        pass
-    
+        tk.Label(self.frame, text="1:1 문의", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        form_frame = tk.Frame(self.frame)
+        form_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        tk.Label(form_frame, text="제목:", font=("맑은 고딕", 11)).grid(row=0, column=0, sticky=tk.W, pady=10)
+        self.title_entry = tk.Entry(form_frame, font=("맑은 고딕", 11), width=40)
+        self.title_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        tk.Label(form_frame, text="내용:", font=("맑은 고딕", 11)).grid(row=1, column=0, sticky=tk.NW, pady=10)
+        self.content_text = tk.Text(form_frame, height=10, width=40)
+        self.content_text.grid(row=1, column=1, padx=10, pady=10)
+
+        btn_frame = tk.Frame(self.frame)
+        btn_frame.pack(pady=20)
+
+        tk.Button(btn_frame, text="제출", command=self.on_submit_click, width=15).pack(side=tk.LEFT, padx=10)
+        tk.Button(btn_frame, text="내 문의 목록", command=self.view_my_inquiries, width=15).pack(side=tk.LEFT, padx=10)
+
     def on_submit_click(self):
-        """
-        문의 제출 버튼 클릭 이벤트 처리
-        """
-        pass
-    
-    def on_inquiry_click(self, inquiry_id: int):
-        """
-        문의 클릭 이벤트 처리 (답변 확인)
-        :param inquiry_id: 클릭한 문의 ID
-        """
+        if self.validate_form():
+            messagebox.showinfo("제출 완료", "문의가 제출되었습니다.")
+            self.frame.destroy()
+
+    def validate_form(self):
+        if not self.title_entry.get().strip():
+            messagebox.showwarning("입력 오류", "제목을 입력해주세요.")
+            return False
+        if not self.content_text.get("1.0", tk.END).strip():
+            messagebox.showwarning("입력 오류", "내용을 입력해주세요.")
+            return False
+        return True
+
+    def view_my_inquiries(self):
+        messagebox.showinfo("내 문의", "내 문의 목록을 표시합니다.")
+
+    def display_inquiry_list(self, inquiries):
         pass
 
 
 class AdminPanel:
     """관리자 패널"""
-    
-    def __init__(self, root, admin_user):
-        """
-        관리자 패널 초기화
-        :param root: Tkinter 루트 윈도우
-        :param admin_user: 관리자 User 객체
-        """
+
+    def __init__(self, root, user):
         self.root = root
-        self.admin_user = admin_user
-        
+        self.user = user
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("관리자 패널")
+        self.frame.geometry("800x600")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        관리자 패널 UI 구성 (FR-11: 역할/권한 관리)
-        - 공고 관리 탭
-        - 지원서 관리 탭
-        - 사용자 관리 탭
-        - 통계 탭
-        """
+        tk.Label(self.frame, text="관리자 패널", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        notebook = ttk.Notebook(self.frame)
+        notebook.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        job_tab = tk.Frame(notebook)
+        application_tab = tk.Frame(notebook)
+        user_tab = tk.Frame(notebook)
+        inquiry_tab = tk.Frame(notebook)
+
+        notebook.add(job_tab, text="공고 관리")
+        notebook.add(application_tab, text="지원서 관리")
+        notebook.add(user_tab, text="사용자 관리")
+        notebook.add(inquiry_tab, text="문의 관리")
+
+    def setup_job_management(self):
         pass
-    
-    def setup_job_management_tab(self):
-        """
-        공고 관리 탭 구성
-        - 공고 등록/수정/삭제
-        """
+
+    def setup_application_management(self):
         pass
-    
-    def setup_application_management_tab(self):
-        """
-        지원서 관리 탭 구성
-        - 지원서 목록 조회
-        - 상태 변경
-        """
+
+    def setup_user_management(self):
         pass
-    
-    def setup_user_management_tab(self):
-        """
-        사용자 관리 탭 구성
-        - 사용자 목록
-        - 권한 변경
-        """
+
+    def setup_inquiry_management(self):
         pass
-    
-    def setup_statistics_tab(self):
-        """
-        통계 탭 구성
-        - 공고별 지원자 수
-        - 인기 공고
-        - 사용자 활동 통계
-        """
+
+    def view_statistics(self):
         pass
 
 
 class SettingsWindow:
     """설정 화면"""
-    
+
     def __init__(self, root, user):
-        """
-        설정 화면 초기화
-        :param root: Tkinter 루트 윈도우
-        :param user: 로그인한 User 객체
-        """
         self.root = root
         self.user = user
-        
+
+        self.frame = tk.Toplevel(root)
+        self.frame.title("설정")
+        self.frame.geometry("500x400")
+        self.setup_ui()
+
     def setup_ui(self):
-        """
-        설정 화면 UI 구성 (UX-01: 다크모드, 글자 크기)
-        - 다크모드 토글
-        - 글자 크기 조절
-        - 알림 설정
-        - 개인정보 관리
-        """
-        pass
-    
+        tk.Label(self.frame, text="설정", font=("맑은 고딕", 16, "bold")).pack(pady=20)
+
+        settings_frame = tk.Frame(self.frame)
+        settings_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        # 다크모드 설정
+        self.dark_mode_var = tk.BooleanVar()
+        tk.Checkbutton(
+            settings_frame,
+            text="다크모드",
+            variable=self.dark_mode_var,
+            command=self.on_dark_mode_toggle,
+            font=("맑은 고딕", 11)
+        ).pack(anchor=tk.W, pady=10)
+
+        # 알림 설정
+        self.notification_var = tk.BooleanVar(value=True)
+        tk.Checkbutton(
+            settings_frame,
+            text="알림 받기",
+            variable=self.notification_var,
+            command=self.on_notification_toggle,
+            font=("맑은 고딕", 11)
+        ).pack(anchor=tk.W, pady=10)
+
+        tk.Button(self.frame, text="저장", command=self.on_save_click, width=15).pack(pady=20)
+
     def on_dark_mode_toggle(self):
-        """
-        다크모드 토글 이벤트 처리
-        """
+        if self.dark_mode_var.get():
+            messagebox.showinfo("다크모드", "다크모드가 활성화되었습니다.")
+        else:
+            messagebox.showinfo("다크모드", "다크모드가 비활성화되었습니다.")
+
+    def on_notification_toggle(self):
         pass
-    
-    def on_font_size_change(self, size: int):
-        """
-        글자 크기 변경 이벤트 처리
-        :param size: 새로운 글자 크기
-        """
-        pass
-    
-    def on_delete_account_click(self):
-        """
-        회원 탈퇴 버튼 클릭 이벤트 처리 (SEC-02: 3단계 이내, 7일 이내 파기)
-        """
-        pass
+
+    def on_save_click(self):
+        messagebox.showinfo("저장", "설정이 저장되었습니다.")
+        self.frame.destroy()
