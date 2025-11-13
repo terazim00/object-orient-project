@@ -23,8 +23,7 @@ class LoginWindow:
         self.on_login_success = on_login_success
 
         # 입력 필드
-        self.username_entry = None
-        self.password_entry = None
+        self.student_id_entry = None
 
         # UI 구성
         self.frame = tk.Frame(root)
@@ -34,8 +33,7 @@ class LoginWindow:
     def setup_ui(self):
         """
         로그인 화면 UI 구성
-        - 학번/아이디 입력 필드
-        - 비밀번호 입력 필드
+        - 학번 입력 필드
         - 로그인 버튼
         - 회원가입 버튼
         """
@@ -47,19 +45,24 @@ class LoginWindow:
         )
         title_label.pack(pady=50)
 
+        # 안내 문구
+        info_label = tk.Label(
+            self.frame,
+            text="개발/테스트 버전 - 학번으로 로그인하세요",
+            font=("맑은 고딕", 10),
+            fg="gray"
+        )
+        info_label.pack(pady=5)
+
         # 입력 프레임
         input_frame = tk.Frame(self.frame)
         input_frame.pack(pady=20)
 
-        # 학번/아이디
-        tk.Label(input_frame, text="학번/아이디:", font=("맑은 고딕", 12)).grid(row=0, column=0, sticky=tk.W, pady=10)
-        self.username_entry = tk.Entry(input_frame, font=("맑은 고딕", 12), width=30)
-        self.username_entry.grid(row=0, column=1, padx=10, pady=10)
-
-        # 비밀번호
-        tk.Label(input_frame, text="비밀번호:", font=("맑은 고딕", 12)).grid(row=1, column=0, sticky=tk.W, pady=10)
-        self.password_entry = tk.Entry(input_frame, font=("맑은 고딕", 12), width=30, show="*")
-        self.password_entry.grid(row=1, column=1, padx=10, pady=10)
+        # 학번
+        tk.Label(input_frame, text="학번:", font=("맑은 고딕", 12)).grid(row=0, column=0, sticky=tk.W, pady=10)
+        self.student_id_entry = tk.Entry(input_frame, font=("맑은 고딕", 12), width=30)
+        self.student_id_entry.grid(row=0, column=1, padx=10, pady=10)
+        tk.Label(input_frame, text="(관리자: 0000000000)", font=("맑은 고딕", 9), fg="gray").grid(row=0, column=2, sticky=tk.W)
 
         # 버튼 프레임
         button_frame = tk.Frame(self.frame)
@@ -86,48 +89,43 @@ class LoginWindow:
         register_btn.pack(side=tk.LEFT, padx=10)
 
         # Enter 키로 로그인
-        self.password_entry.bind('<Return>', lambda e: self.on_login_click())
+        self.student_id_entry.bind('<Return>', lambda e: self.on_login_click())
 
     def on_login_click(self):
         """
         로그인 버튼 클릭 이벤트 처리
-        학교 SSO 연동 (SEC-01)
+        (개발/테스트 버전 - 학번으로만 로그인)
         """
         if not self.validate_input():
             return
 
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+        student_id = self.student_id_entry.get().strip()
 
-        # 로그인 시도
-        user = self.user_manager.login(username, password)
+        # 학번으로 로그인 시도 (비밀번호 없음)
+        user = self.user_manager.login(student_id, "")
 
         if user:
             messagebox.showinfo("로그인 성공", f"환영합니다, {user.username}님!")
             self.on_login_success(user)
         else:
-            messagebox.showerror("로그인 실패", "학번/아이디 또는 비밀번호가 올바르지 않습니다.")
+            messagebox.showerror("로그인 실패", "존재하지 않는 학번입니다.\n회원가입을 먼저 진행해주세요.")
 
     def on_register_click(self):
         """
         회원가입 버튼 클릭 이벤트 처리
         """
-        messagebox.showinfo("회원가입", "회원가입 기능은 학교 SSO를 통해 자동으로 진행됩니다.")
+        # 회원가입 창 열기
+        RegisterWindow(self.root, self.user_manager, on_register_success=None)
 
     def validate_input(self) -> bool:
         """
         입력 값 유효성 검사
         :return: 유효성 여부
         """
-        username = self.username_entry.get().strip()
-        password = self.password_entry.get().strip()
+        student_id = self.student_id_entry.get().strip()
 
-        if not username:
-            messagebox.showwarning("입력 오류", "학번/아이디를 입력해주세요.")
-            return False
-
-        if not password:
-            messagebox.showwarning("입력 오류", "비밀번호를 입력해주세요.")
+        if not student_id:
+            messagebox.showwarning("입력 오류", "학번을 입력해주세요.")
             return False
 
         return True
@@ -135,6 +133,155 @@ class LoginWindow:
     def destroy(self):
         """프레임 제거"""
         self.frame.destroy()
+
+
+class RegisterWindow:
+    """회원가입 화면"""
+
+    def __init__(self, root, user_manager, on_register_success):
+        """
+        회원가입 화면 초기화
+        :param root: Tkinter 루트 윈도우
+        :param user_manager: UserManager 인스턴스
+        :param on_register_success: 회원가입 성공 콜백 함수
+        """
+        self.root = root
+        self.user_manager = user_manager
+        self.on_register_success = on_register_success
+
+        # 입력 필드
+        self.student_id_entry = None
+        self.username_entry = None
+        self.department_var = None
+        self.email_entry = None
+
+        # 회원가입 창 생성
+        self.window = tk.Toplevel(root)
+        self.window.title("회원가입")
+        self.window.geometry("500x500")
+        self.setup_ui()
+
+    def setup_ui(self):
+        """
+        회원가입 화면 UI 구성
+        """
+        # 제목
+        title_label = tk.Label(
+            self.window,
+            text="회원가입",
+            font=("맑은 고딕", 20, "bold")
+        )
+        title_label.pack(pady=30)
+
+        # 입력 프레임
+        input_frame = tk.Frame(self.window)
+        input_frame.pack(pady=20)
+
+        # 학번
+        tk.Label(input_frame, text="학번:", font=("맑은 고딕", 12)).grid(row=0, column=0, sticky=tk.W, pady=15, padx=10)
+        self.student_id_entry = tk.Entry(input_frame, font=("맑은 고딕", 12), width=30)
+        self.student_id_entry.grid(row=0, column=1, padx=10, pady=15)
+        tk.Label(input_frame, text="(10자리 숫자)", font=("맑은 고딕", 9), fg="gray").grid(row=0, column=2, sticky=tk.W)
+
+        # 이름
+        tk.Label(input_frame, text="이름:", font=("맑은 고딕", 12)).grid(row=1, column=0, sticky=tk.W, pady=15, padx=10)
+        self.username_entry = tk.Entry(input_frame, font=("맑은 고딕", 12), width=30)
+        self.username_entry.grid(row=1, column=1, padx=10, pady=15)
+
+        # 학과
+        tk.Label(input_frame, text="학과:", font=("맑은 고딕", 12)).grid(row=2, column=0, sticky=tk.W, pady=15, padx=10)
+        self.department_var = tk.StringVar(value="컴퓨터공학")
+        department_menu = ttk.Combobox(
+            input_frame,
+            textvariable=self.department_var,
+            values=["컴퓨터공학", "디자인공학", "건축공학"],
+            font=("맑은 고딕", 12),
+            width=28,
+            state="readonly"
+        )
+        department_menu.grid(row=2, column=1, padx=10, pady=15)
+
+        # 이메일 (비활성화)
+        tk.Label(input_frame, text="이메일:", font=("맑은 고딕", 12)).grid(row=3, column=0, sticky=tk.W, pady=15, padx=10)
+        self.email_entry = tk.Entry(input_frame, font=("맑은 고딕", 12), width=30, state="disabled")
+        self.email_entry.grid(row=3, column=1, padx=10, pady=15)
+        tk.Label(input_frame, text="(개발 버전에서는 미지원)", font=("맑은 고딕", 9), fg="gray").grid(row=3, column=2, sticky=tk.W)
+
+        # 버튼 프레임
+        button_frame = tk.Frame(self.window)
+        button_frame.pack(pady=30)
+
+        # 가입 버튼
+        register_btn = tk.Button(
+            button_frame,
+            text="가입하기",
+            font=("맑은 고딕", 12),
+            width=15,
+            command=self.on_register_click
+        )
+        register_btn.pack(side=tk.LEFT, padx=10)
+
+        # 취소 버튼
+        cancel_btn = tk.Button(
+            button_frame,
+            text="취소",
+            font=("맑은 고딕", 12),
+            width=15,
+            command=self.window.destroy
+        )
+        cancel_btn.pack(side=tk.LEFT, padx=10)
+
+    def on_register_click(self):
+        """
+        가입하기 버튼 클릭 이벤트 처리
+        """
+        if not self.validate_input():
+            return
+
+        student_id = self.student_id_entry.get().strip()
+        username = self.username_entry.get().strip()
+        department = self.department_var.get()
+
+        # 회원가입 데이터 준비
+        user_data = {
+            'student_id': student_id,
+            'username': username,
+            'department': department,
+            'role': 'student'
+        }
+
+        # 회원가입 시도
+        user_id = self.user_manager.register(user_data)
+
+        if user_id:
+            messagebox.showinfo("가입 성공", f"회원가입이 완료되었습니다!\n학번: {student_id}로 로그인해주세요.")
+            self.window.destroy()
+            if self.on_register_success:
+                self.on_register_success()
+        else:
+            messagebox.showerror("가입 실패", "이미 존재하는 학번이거나 가입에 실패했습니다.")
+
+    def validate_input(self) -> bool:
+        """
+        입력 값 유효성 검사
+        :return: 유효성 여부
+        """
+        student_id = self.student_id_entry.get().strip()
+        username = self.username_entry.get().strip()
+
+        if not student_id:
+            messagebox.showwarning("입력 오류", "학번을 입력해주세요.")
+            return False
+
+        if len(student_id) != 10 or not student_id.isdigit():
+            messagebox.showwarning("입력 오류", "학번은 10자리 숫자여야 합니다.")
+            return False
+
+        if not username:
+            messagebox.showwarning("입력 오류", "이름을 입력해주세요.")
+            return False
+
+        return True
 
 
 class MainWindow:
