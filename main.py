@@ -56,6 +56,9 @@ class Application:
         # Manager 인스턴스 생성
         self.setup_managers()
 
+        # 기본 관리자 계정 생성 (개발/테스트용)
+        self.create_default_admin()
+
         # 로그인 화면 표시
         self.show_login_window()
     
@@ -92,7 +95,38 @@ class Application:
         self.recommendation_manager = RecommendationManager(self.db_manager)
         self.faq_manager = FAQManager(self.db_manager)
         self.inquiry_manager = InquiryManager(self.db_manager)
-    
+
+    def create_default_admin(self):
+        """
+        기본 관리자 계정 생성 (개발/테스트용)
+        학번: admin (0000000000)
+        이름: 관리자
+        """
+        from dao import UserDAO
+
+        user_dao = UserDAO(self.db_manager)
+
+        # admin 계정이 이미 있는지 확인
+        existing_admin = user_dao.get_user_by_student_id("0000000000")
+
+        if not existing_admin:
+            # 없으면 생성
+            admin_data = {
+                'student_id': '0000000000',
+                'username': '관리자',
+                'department': '시스템',
+                'role': 'admin'
+            }
+
+            admin_id = self.user_manager.register(admin_data)
+
+            if admin_id:
+                print("기본 관리자 계정이 생성되었습니다. (학번: 0000000000)")
+            else:
+                print("관리자 계정 생성 실패")
+        else:
+            print("관리자 계정이 이미 존재합니다.")
+
     def show_login_window(self):
         """
         로그인 화면 표시
