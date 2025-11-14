@@ -651,6 +651,9 @@ class MainWindow:
     def open_faq_window(self):
         FAQWindow(self.root, self.faq_manager)
 
+    def validate_form(self):
+        return True
+
 
 # ==========================
 # MyPage

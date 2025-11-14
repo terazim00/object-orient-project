@@ -3,6 +3,9 @@ import sqlite3
 from typing import Optional
 
 
+import sqlite3
+from typing import Any, List, Tuple, Optional
+
 class DatabaseManager:
     """SQLite 데이터베이스 연결 및 쿼리 실행"""
 
